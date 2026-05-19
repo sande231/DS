@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "Sales Capture",
+    "slug": "sales-capture",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1d4ed8"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.salescapture.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "Sales Capture needs camera access to photograph your sales records."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1d4ed8"
+      },
+      "package": "com.salescapture.app",
+      "permissions": ["CAMERA"]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Sales Capture needs camera access to photograph your sales records."
+        }
+      ]
+    ]
+  }
+}

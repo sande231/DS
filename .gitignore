@@ -1,0 +1,6 @@
+node_modules/
+app/ios/Pods/
+app/ios/build/
+app/.expo/
+server/.env
+*.log
