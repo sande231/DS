@@ -13,7 +13,7 @@ import { CameraView, CameraType, FlashMode, useCameraPermissions } from 'expo-ca
 import * as FileSystem from 'expo-file-system';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import CameraGuide from '../components/CameraGuide';
 import LoadingOverlay from '../components/LoadingOverlay';
@@ -21,7 +21,7 @@ import { extractSalesData } from '../services/ocrService';
 import { saveSalesData } from '../services/storageService';
 import { RootStackParamList } from '../types';
 
-type CameraNavProp = StackNavigationProp<RootStackParamList>;
+type CameraNavProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function CameraScreen() {
   const navigation = useNavigation<CameraNavProp>();

@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Text, Platform } from 'react-native';
 
 import HomeScreen from '../screens/HomeScreen';
@@ -13,7 +13,7 @@ import SettingsScreen from '../screens/SettingsScreen';
 import { RootStackParamList, BottomTabParamList } from '../types';
 
 const Tab = createBottomTabNavigator<BottomTabParamList>();
-const Stack = createStackNavigator<RootStackParamList>();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 function TabIcon({ emoji, focused }: { emoji: string; focused: boolean }) {
   return (

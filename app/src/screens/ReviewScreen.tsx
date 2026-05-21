@@ -9,7 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import { useRoute, useNavigation, RouteProp } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import PaymentRow from '../components/PaymentRow';
 import LoadingOverlay from '../components/LoadingOverlay';
@@ -18,7 +18,7 @@ import { updateSalesData } from '../services/storageService';
 import { RootStackParamList } from '../types';
 
 type ReviewRouteProp = RouteProp<RootStackParamList, 'Review'>;
-type ReviewNavProp = StackNavigationProp<RootStackParamList>;
+type ReviewNavProp = NativeStackNavigationProp<RootStackParamList>;
 
 const CONFIDENCE_CONFIG = {
   high: { label: 'High Confidence', bg: '#d1fae5', text: '#065f46', border: '#6ee7b7' },

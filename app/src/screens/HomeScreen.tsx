@@ -9,7 +9,7 @@ import {
   Alert,
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import SalesSummaryCard from '../components/SalesSummaryCard';
 import { getAllSalesData } from '../services/storageService';
@@ -17,7 +17,7 @@ import { SalesData, RootStackParamList } from '../types';
 import { getTodayString, getRelativeLabel } from '../utils/dateUtils';
 import { getTodayTotals, groupByDate, getSortedDates } from '../utils/dataAggregation';
 
-type HomeNavProp = StackNavigationProp<RootStackParamList>;
+type HomeNavProp = NativeStackNavigationProp<RootStackParamList>;
 
 function ConfidenceDot({ confidence }: { confidence: 'high' | 'medium' | 'low' }) {
   const colors = { high: '#10b981', medium: '#f59e0b', low: '#ef4444' };

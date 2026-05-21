@@ -29,6 +29,7 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "newArchEnabled": true,
     "plugins": [
       [
         "expo-camera",

@@ -9,14 +9,14 @@ import {
   Alert,
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { getAllSalesData, deleteSalesData } from '../services/storageService';
 import { SalesData, RootStackParamList } from '../types';
 import { getRelativeLabel } from '../utils/dateUtils';
 import { groupByDate, getSortedDates, getDayTotals } from '../utils/dataAggregation';
 
-type HistoryNavProp = StackNavigationProp<RootStackParamList>;
+type HistoryNavProp = NativeStackNavigationProp<RootStackParamList>;
 
 interface HistoryGroup {
   date: string;
