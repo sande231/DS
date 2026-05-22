@@ -43,7 +43,7 @@ export async function sendSalesSummaryEmail(salesData: SalesData): Promise<void>
         notes: salesData.notes,
       },
       {
-        timeout: 30000,
+        timeout: 60000,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -104,7 +104,7 @@ export async function sendTestEmail(recipientEmail: string, senderName: string):
         notes: 'This is a test email to verify your SMTP configuration is working correctly.',
       },
       {
-        timeout: 30000,
+        timeout: 60000,
         headers: {
           'Content-Type': 'application/json',
         },
