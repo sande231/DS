@@ -1,4 +1,5 @@
 import axios from 'axios';
+import * as FileSystem from 'expo-file-system';
 import { SalesData, PaymentEntry } from '../types';
 import { getSettings } from './storageService';
 import { getTodayString } from '../utils/dateUtils';
@@ -81,10 +82,23 @@ export async function extractSalesData(
 
   const { cashPayments, cardPayments, cashTotal, cardTotal, confidence, notes } = response.data;
 
+  const id = generateId();
+
+  // Copy image to permanent app storage so it persists across sessions
+  let permanentUri = imageUri;
+  try {
+    const receiptDir = `${FileSystem.documentDirectory}receipts/`;
+    await FileSystem.makeDirectoryAsync(receiptDir, { intermediates: true });
+    permanentUri = `${receiptDir}${id}.jpg`;
+    await FileSystem.copyAsync({ from: imageUri, to: permanentUri });
+  } catch {
+    permanentUri = imageUri;
+  }
+
   return {
-    id: generateId(),
+    id,
     date: getTodayString(),
-    imageUri,
+    imageUri: permanentUri,
     cashPayments,
     cardPayments,
     cashTotal,

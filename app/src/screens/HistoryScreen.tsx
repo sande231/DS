@@ -7,6 +7,7 @@ import {
   StyleSheet,
   RefreshControl,
   Alert,
+  Image,
 } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -80,6 +81,15 @@ function RecordItem({
       onLongPress={handleLongPress}
       activeOpacity={0.7}
     >
+      {/* Receipt thumbnail */}
+      {record.imageUri ? (
+        <Image source={{ uri: record.imageUri }} style={styles.thumbnail} resizeMode="cover" />
+      ) : (
+        <View style={styles.thumbnailPlaceholder}>
+          <Text style={styles.thumbnailPlaceholderText}>🧾</Text>
+        </View>
+      )}
+
       <View style={styles.recordLeft}>
         <View style={styles.recordTitleRow}>
           <ConfidenceBadge confidence={record.confidence} />
@@ -93,16 +103,13 @@ function RecordItem({
         <Text style={styles.recordSubtext}>
           Cash ${record.cashTotal.toFixed(2)} · Card ${record.cardTotal.toFixed(2)}
         </Text>
-        {record.notes ? (
-          <Text style={styles.recordNotes} numberOfLines={1}>
-            {record.notes}
-          </Text>
-        ) : null}
-      </View>
-      <View style={styles.recordRight}>
         <Text style={styles.recordTotal}>${grandTotal.toFixed(2)}</Text>
-        <Text style={styles.recordChevron}>›</Text>
       </View>
+
+      {/* Delete button */}
+      <TouchableOpacity style={styles.deleteButton} onPress={handleLongPress} activeOpacity={0.7}>
+        <Text style={styles.deleteButtonText}>🗑️</Text>
+      </TouchableOpacity>
     </TouchableOpacity>
   );
 }
@@ -205,7 +212,7 @@ export default function HistoryScreen() {
       {totalRecords > 0 && (
         <View style={styles.summaryBar}>
           <Text style={styles.summaryText}>
-            {totalRecords} {totalRecords === 1 ? 'record' : 'records'} · Long-press to delete
+            {totalRecords} {totalRecords === 1 ? 'record' : 'records'} · Tap 🗑️ to delete
           </Text>
         </View>
       )}
@@ -347,20 +354,37 @@ const styles = StyleSheet.create({
     marginTop: 2,
     fontStyle: 'italic',
   },
-  recordRight: {
-    flexDirection: 'row',
+  thumbnail: {
+    width: 52,
+    height: 52,
+    borderRadius: 8,
+    marginRight: 12,
+    backgroundColor: '#f3f4f6',
+  },
+  thumbnailPlaceholder: {
+    width: 52,
+    height: 52,
+    borderRadius: 8,
+    marginRight: 12,
+    backgroundColor: '#f3f4f6',
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: 6,
+  },
+  thumbnailPlaceholderText: {
+    fontSize: 22,
   },
   recordTotal: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '700',
     color: '#1d4ed8',
+    marginTop: 4,
   },
-  recordChevron: {
-    fontSize: 20,
-    color: '#9ca3af',
-    fontWeight: '300',
+  deleteButton: {
+    padding: 8,
+    marginLeft: 4,
+  },
+  deleteButtonText: {
+    fontSize: 18,
   },
   emptyState: {
     flex: 1,

@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as FileSystem from 'expo-file-system';
 import { SalesData, AppSettings } from '../types';
 
 const SALES_DATA_KEY = '@sales_capture:sales_data';
@@ -75,8 +76,12 @@ export async function updateSalesData(
 export async function deleteSalesData(id: string): Promise<void> {
   try {
     const existing = await getAllSalesData();
+    const record = existing.find((r) => r.id === id);
     const filtered = existing.filter((r) => r.id !== id);
     await AsyncStorage.setItem(SALES_DATA_KEY, JSON.stringify(filtered));
+    if (record?.imageUri?.startsWith(FileSystem.documentDirectory ?? '')) {
+      await FileSystem.deleteAsync(record.imageUri, { idempotent: true });
+    }
   } catch (err) {
     console.error('[Storage] Failed to delete sales data:', err);
     throw new Error('Failed to delete sales record.');
