@@ -1,38 +1,61 @@
-# Sales Capture App
+# 📊 Sales Capture App
 
-A mobile application for photographing daily sales records, extracting cash/card payment totals via Claude Vision AI, and automatically emailing daily summaries.
+> A smart mobile application that photographs daily sales records, extracts cash & card payment totals using Claude AI Vision, and automatically emails professional daily summaries.
 
-## Architecture
+**Author:** Sandeep Shah
+
+---
+
+## ✨ Features
+
+- 📷 **Camera Capture** — Full-screen camera with document alignment guide
+- 🖼️ **Gallery Import** — Pick existing photos directly from your photo library
+- 🤖 **AI Extraction** — Claude Vision API reads and separates cash vs. card payments instantly
+- 📧 **Email Summary** — One-tap sends a professional HTML summary to any email address
+- 📋 **History** — All past captures grouped by date with totals
+- ⚙️ **Settings** — Configure recipient email and server URL
+
+---
+
+## 🏗️ Architecture
 
 ```
-/app       React Native (Expo) mobile app
-/server    Node.js Express backend
+/app        React Native (Expo) — iOS & Android mobile app
+/server     Node.js + Express — Backend API (deployed on Render)
 ```
 
-## Quick Start
+**Tech Stack:**
+| Layer | Technology |
+|---|---|
+| Mobile App | React Native, Expo SDK 52 |
+| Navigation | React Navigation (Native Stack + Bottom Tabs) |
+| Backend | Node.js, Express, TypeScript |
+| AI / OCR | Anthropic Claude Vision API |
+| Email | Resend API |
+| Hosting | Render (auto-deploy from GitHub) |
+| Storage | AsyncStorage (on-device) |
+
+---
+
+## 🚀 Quick Start
 
 ### 1. Backend Setup
 
 ```bash
 cd server
 cp .env.example .env
-# Edit .env with your credentials
+# Fill in your credentials
 npm install
 npm run dev
 ```
 
-**Required environment variables** (in `server/.env`):
+**Required environment variables:**
 
-| Variable           | Description                              |
-|--------------------|------------------------------------------|
-| `ANTHROPIC_API_KEY` | Your Anthropic API key                  |
-| `SMTP_HOST`         | SMTP server host (e.g. smtp.gmail.com)  |
-| `SMTP_PORT`         | SMTP port (587 for TLS, 465 for SSL)    |
-| `SMTP_USER`         | Your email address                      |
-| `SMTP_PASS`         | Your email app password                 |
-| `PORT`              | Server port (default: 3001)             |
-
-For Gmail, use an [App Password](https://support.google.com/accounts/answer/185833) (not your regular password).
+| Variable | Description |
+|---|---|
+| `ANTHROPIC_API_KEY` | Anthropic API key for Claude Vision |
+| `RESEND_API_KEY` | Resend API key for email sending |
+| `PORT` | Server port (default: 3001) |
 
 ### 2. Mobile App Setup
 
@@ -42,49 +65,56 @@ npm install
 npx expo start
 ```
 
-Scan the QR code with [Expo Go](https://expo.dev/go) on your iOS or Android device.
+Scan the QR code with [Expo Go](https://expo.dev/go) on your device, or press `i` to open in iOS Simulator.
 
-**Important:** In Settings, update the Server URL to your machine's local IP address (e.g., `http://192.168.1.100:3001`), not `localhost`, so your phone can reach the server.
+> **Note:** In the app's Settings screen, update the Server URL to your deployed Render URL (e.g. `https://sales-capture-server.onrender.com`).
 
-### 3. Docker (Production)
+### 3. Production Deployment
+
+The backend auto-deploys to [Render](https://render.com) on every push to GitHub via `render.yaml`.
 
 ```bash
-# Create a .env file at the project root with your credentials
+# Docker (self-hosted)
 cp server/.env.example .env
 docker-compose up -d
 ```
 
-## How It Works
+---
 
-1. **Capture** — Open the Camera tab and photograph a sales record (receipt tape, handwritten ledger, spreadsheet printout, Z-report, etc.)
-2. **Extract** — The image is sent to the backend, which calls Claude Vision API to identify and separate cash vs. card payments
-3. **Review** — The app displays extracted payment entries, totals, and a confidence indicator
-4. **Email** — Tap "Send Email Summary" to receive a formatted HTML email with all payment details
+## 📱 App Screens
 
-## App Screens
+| Screen | Description |
+|---|---|
+| **Home** | Dashboard with today's totals and recent captures |
+| **Camera** | Full-screen camera with gallery import option |
+| **Review** | Extracted payment breakdown with email button |
+| **History** | All captures grouped by date; long-press to delete |
+| **Settings** | Email recipient and server URL configuration |
 
-| Screen    | Description                                               |
-|-----------|-----------------------------------------------------------|
-| Home      | Dashboard showing today's totals and recent captures      |
-| Camera    | Full-screen camera with document alignment guide          |
-| Review    | Extracted data with payment breakdown and email button    |
-| History   | All past captures grouped by date; long-press to delete   |
-| Settings  | Email and server configuration with test email button     |
+---
 
-## API Endpoints
+## 🔌 API Reference
 
-| Method | Endpoint                   | Description                          |
-|--------|----------------------------|--------------------------------------|
-| GET    | `/health`                  | Server health and configuration check|
-| POST   | `/api/ocr/extract`         | Extract payments from base64 image   |
-| POST   | `/api/email/send-summary`  | Send daily summary email             |
+### `GET /health`
+Returns server status and service availability.
 
-### POST `/api/ocr/extract`
+```json
+{
+  "status": "ok",
+  "services": {
+    "anthropicKey": true,
+    "smtp": true
+  }
+}
+```
+
+### `POST /api/ocr/extract`
+Extracts payment data from a base64-encoded image.
 
 **Request:**
 ```json
 {
-  "image": "<base64-encoded image string>",
+  "image": "<base64 string>",
   "mimeType": "image/jpeg"
 }
 ```
@@ -94,17 +124,18 @@ docker-compose up -d
 {
   "success": true,
   "data": {
-    "cashPayments": [{ "description": "Cash Sale", "amount": 150.00 }],
-    "cardPayments": [{ "description": "Visa", "amount": 320.50 }],
-    "cashTotal": 150.00,
-    "cardTotal": 320.50,
+    "cashPayments": [{ "description": "Cash", "amount": 532.06 }],
+    "cardPayments": [{ "description": "Credit", "amount": 2414.99 }],
+    "cashTotal": 532.06,
+    "cardTotal": 2414.99,
     "confidence": "high",
     "notes": "Clear image, all values legible"
   }
 }
 ```
 
-### POST `/api/email/send-summary`
+### `POST /api/email/send-summary`
+Sends a formatted HTML sales summary email.
 
 **Request:**
 ```json
@@ -114,32 +145,40 @@ docker-compose up -d
   "senderName": "My Business",
   "cashPayments": [...],
   "cardPayments": [...],
-  "cashTotal": 150.00,
-  "cardTotal": 320.50,
-  "confidence": "high",
-  "notes": "optional notes"
+  "cashTotal": 532.06,
+  "cardTotal": 2414.99,
+  "confidence": "high"
 }
 ```
 
-## Supported Sales Record Formats
+---
 
-The Claude Vision extraction handles:
-- POS/cash register receipt tapes
+## 📄 Supported Sales Record Formats
+
+- POS / cash register receipt tapes
 - Handwritten day books and sales ledgers
 - Printed spreadsheet summaries
 - Bank card terminal printouts (EFTPOS)
 - End-of-day Z-reports
 
-## Development
+---
+
+## 🛠️ Development
 
 ```bash
-# Server - TypeScript watch mode
+# Server — TypeScript watch mode
 cd server && npm run dev
 
-# App - Expo with live reload
+# App — Expo with live reload
 cd app && npx expo start
 
-# Type check both projects
+# Type check
 cd server && npm run lint
 cd app && npm run lint
 ```
+
+---
+
+## 📜 License
+
+MIT © Sandeep Shah
