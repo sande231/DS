@@ -19,7 +19,8 @@ Your task is to identify and separate ALL cash payments from ALL credit/debit ca
 Guidelines:
 - Cash payments: look for labels like "Cash", "CASH", "Currency", "Notes", "Coins", "CHQ" (cheque), "Voucher"
 - Card payments: look for labels like "Card", "CARD", "EFTPOS", "Visa", "Mastercard", "Amex", "Credit", "Debit", "Contactless", "Tap"
-- Each line item in a payment section should be extracted as a separate entry
+- Extract entries ONLY from the primary "Payment Details" or "Payments" section
+- IMPORTANT: If the document has a "Credit Card Breakdown" or similar sub-breakdown section, do NOT extract those entries — they are already included in the Credit/Card total above and would cause double counting
 - Preserve the original description text from the document
 - Convert all amounts to numeric values (remove currency symbols, commas)
 - If a section total is shown, do NOT include it as an entry — only include line items

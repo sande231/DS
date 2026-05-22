@@ -12,6 +12,7 @@ import {
 import { CameraView, CameraType, FlashMode, useCameraPermissions } from 'expo-camera';
 import * as FileSystem from 'expo-file-system';
 import * as ImageManipulator from 'expo-image-manipulator';
+import * as ImagePicker from 'expo-image-picker';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
@@ -58,6 +59,21 @@ export default function CameraScreen() {
 
   const retake = useCallback(() => {
     setCapturedUri(null);
+  }, []);
+
+  const pickFromGallery = useCallback(async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Permission Required', 'Please allow access to your photo library.');
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      quality: 0.85,
+    });
+    if (!result.canceled && result.assets[0]?.uri) {
+      setCapturedUri(result.assets[0].uri);
+    }
   }, []);
 
   const usePhoto = useCallback(async () => {
@@ -172,12 +188,11 @@ export default function CameraScreen() {
         {/* Bottom capture area */}
         <View style={styles.bottomControls}>
           <View style={styles.captureRow}>
-            {/* Flash indicator */}
-            <View style={styles.flashIndicator}>
-              {flash === 'on' && (
-                <View style={styles.flashOnDot} />
-              )}
-            </View>
+            {/* Gallery button */}
+            <TouchableOpacity style={styles.galleryButton} onPress={pickFromGallery} activeOpacity={0.7}>
+              <Text style={styles.galleryButtonText}>🖼️</Text>
+              <Text style={styles.controlLabel}>Gallery</Text>
+            </TouchableOpacity>
 
             {/* Capture button */}
             <TouchableOpacity
@@ -188,7 +203,10 @@ export default function CameraScreen() {
               <View style={styles.captureButtonInner} />
             </TouchableOpacity>
 
-            <View style={styles.flashIndicator} />
+            {/* Flash indicator */}
+            <View style={styles.flashIndicator}>
+              {flash === 'on' && <View style={styles.flashOnDot} />}
+            </View>
           </View>
 
           <Text style={styles.captureHint}>Tap to capture</Text>
@@ -248,6 +266,16 @@ const styles = StyleSheet.create({
   flashIndicator: {
     width: 60,
     alignItems: 'center',
+  },
+  galleryButton: {
+    width: 60,
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    borderRadius: 12,
+    paddingVertical: 8,
+  },
+  galleryButtonText: {
+    fontSize: 22,
   },
   flashOnDot: {
     width: 8,
