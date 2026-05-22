@@ -1,4 +1,4 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import { PaymentEntry } from '../utils/extractPayments';
 
 export interface EmailSummaryPayload {
@@ -13,25 +13,12 @@ export interface EmailSummaryPayload {
   confidence: 'high' | 'medium' | 'low';
 }
 
-function createTransporter() {
-  const host = process.env.SMTP_HOST;
-  const port = parseInt(process.env.SMTP_PORT || '587', 10);
-  const user = process.env.SMTP_USER;
-  const pass = process.env.SMTP_PASS;
-
-  if (!host || !user || !pass) {
-    throw new Error('SMTP configuration is incomplete. Please check SMTP_HOST, SMTP_USER, and SMTP_PASS environment variables.');
+function createResendClient() {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    throw new Error('SMTP configuration is incomplete. Please check RESEND_API_KEY environment variable.');
   }
-
-  return nodemailer.createTransport({
-    host,
-    port,
-    secure: port === 465,
-    auth: { user, pass },
-    tls: {
-      rejectUnauthorized: false,
-    },
-  });
+  return new Resend(apiKey);
 }
 
 function formatCurrency(amount: number): string {
@@ -229,34 +216,19 @@ function buildHtmlEmail(payload: EmailSummaryPayload): string {
  * Sends a daily sales summary email via nodemailer SMTP.
  */
 export async function sendSummaryEmail(payload: EmailSummaryPayload): Promise<void> {
-  const transporter = createTransporter();
+  const resend = createResendClient();
 
   const html = buildHtmlEmail(payload);
   const grandTotal = payload.cashTotal + payload.cardTotal;
 
-  const mailOptions = {
-    from: `"${payload.senderName || 'Sales Capture'}" <${process.env.SMTP_USER}>`,
+  const { error } = await resend.emails.send({
+    from: 'Sales Capture <onboarding@resend.dev>',
     to: payload.recipientEmail,
     subject: `Daily Sales Summary - ${payload.date} | Total: $${grandTotal.toFixed(2)}`,
     html,
-    text: [
-      `Daily Sales Summary - ${payload.date}`,
-      '',
-      `Cash Total:  $${payload.cashTotal.toFixed(2)}`,
-      `Card Total:  $${payload.cardTotal.toFixed(2)}`,
-      `Grand Total: $${grandTotal.toFixed(2)}`,
-      '',
-      'Cash Payments:',
-      ...payload.cashPayments.map((p) => `  ${p.description}: $${p.amount.toFixed(2)}`),
-      '',
-      'Card Payments:',
-      ...payload.cardPayments.map((p) => `  ${p.description}: $${p.amount.toFixed(2)}`),
-      '',
-      payload.notes ? `Notes: ${payload.notes}` : '',
-    ]
-      .filter((line) => line !== undefined)
-      .join('\n'),
-  };
+  });
 
-  await transporter.sendMail(mailOptions);
+  if (error) {
+    throw new Error(error.message);
+  }
 }

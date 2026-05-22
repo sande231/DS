@@ -26,7 +26,7 @@ app.get('/health', (_req, res) => {
     version: '1.0.0',
     services: {
       anthropicKey: !!process.env.ANTHROPIC_API_KEY,
-      smtp: !!(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS),
+      smtp: !!process.env.RESEND_API_KEY,
     },
   });
 });
