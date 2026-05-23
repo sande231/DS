@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -14,7 +14,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import PaymentRow from '../components/PaymentRow';
 import LoadingOverlay from '../components/LoadingOverlay';
 import { sendSalesSummaryEmail } from '../services/emailService';
-import { updateSalesData } from '../services/storageService';
+import { updateSalesData, getSettings } from '../services/storageService';
 import { RootStackParamList } from '../types';
 
 type ReviewRouteProp = RouteProp<RootStackParamList, 'Review'>;
@@ -40,6 +40,16 @@ export default function ReviewScreen() {
   const navigation = useNavigation<ReviewNavProp>();
   const [salesData, setSalesData] = useState(route.params.salesData);
   const [isSendingEmail, setIsSendingEmail] = useState(false);
+
+  const autoSendTriggered = useRef(false);
+
+  useEffect(() => {
+    if (!route.params.autoSend || salesData.emailSent || autoSendTriggered.current) return;
+    autoSendTriggered.current = true;
+    getSettings().then((s) => {
+      if (s.autoSendEmail) doSendEmail();
+    });
+  }, []);
 
   const { cashPayments, cardPayments, cashTotal, cardTotal, confidence, notes, imageUri, emailSent } =
     salesData;

@@ -26,7 +26,7 @@ export interface AppSettings {
 export type RootStackParamList = {
   Main: undefined;
   Camera: undefined;
-  Review: { salesData: SalesData };
+  Review: { salesData: SalesData; autoSend?: boolean };
 };
 
 export type BottomTabParamList = {

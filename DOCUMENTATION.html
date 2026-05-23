@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Sales Capture App – Full Technical Documentation</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; color: #1f2937; background: #fff; line-height: 1.7; }
+  .cover { background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%); color: #fff; padding: 80px 60px; page-break-after: always; }
+  .cover h1 { font-size: 42px; font-weight: 800; margin-bottom: 12px; }
+  .cover .subtitle { font-size: 20px; opacity: 0.85; margin-bottom: 40px; }
+  .cover .meta { display: flex; gap: 40px; flex-wrap: wrap; }
+  .cover .meta-item { background: rgba(255,255,255,0.15); border-radius: 10px; padding: 16px 24px; }
+  .cover .meta-item .label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; margin-bottom: 4px; }
+  .cover .meta-item .value { font-size: 16px; font-weight: 700; }
+  .content { max-width: 900px; margin: 0 auto; padding: 40px 40px 60px; }
+  h1 { font-size: 28px; font-weight: 800; color: #1d4ed8; margin: 48px 0 16px; padding-bottom: 10px; border-bottom: 3px solid #dbeafe; }
+  h2 { font-size: 20px; font-weight: 700; color: #1e40af; margin: 32px 0 12px; padding-left: 12px; border-left: 4px solid #1d4ed8; }
+  h3 { font-size: 16px; font-weight: 700; color: #374151; margin: 20px 0 8px; }
+  p { margin-bottom: 12px; color: #374151; }
+  ul, ol { padding-left: 24px; margin-bottom: 12px; }
+  li { margin-bottom: 6px; }
+  code { background: #f1f5f9; border: 1px solid #e2e8f0; border-radius: 4px; padding: 2px 6px; font-family: 'Menlo', 'Monaco', monospace; font-size: 12.5px; color: #1d4ed8; }
+  pre { background: #0f172a; color: #e2e8f0; border-radius: 10px; padding: 20px; margin: 16px 0; overflow-x: auto; font-family: 'Menlo', monospace; font-size: 12.5px; line-height: 1.6; }
+  pre code { background: none; border: none; color: inherit; font-size: inherit; padding: 0; }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+  .badge-blue { background: #dbeafe; color: #1e40af; }
+  .badge-green { background: #d1fae5; color: #065f46; }
+  .badge-purple { background: #ede9fe; color: #5b21b6; }
+  .badge-orange { background: #fef3c7; color: #92400e; }
+  .badge-red { background: #fee2e2; color: #991b1b; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+  th { background: #1d4ed8; color: #fff; padding: 10px 14px; text-align: left; font-weight: 700; }
+  td { padding: 10px 14px; border-bottom: 1px solid #e5e7eb; }
+  tr:nth-child(even) td { background: #f8fafc; }
+  .info-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 10px; padding: 16px 20px; margin: 16px 0; }
+  .info-box .icon { font-size: 18px; margin-bottom: 6px; }
+  .warning-box { background: #fffbeb; border: 1px solid #fcd34d; border-radius: 10px; padding: 16px 20px; margin: 16px 0; }
+  .flow-box { background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 10px; padding: 20px; margin: 16px 0; }
+  .flow-step { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 14px; }
+  .flow-num { background: #1d4ed8; color: #fff; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; flex-shrink: 0; }
+  .flow-text strong { display: block; font-size: 14px; color: #1f2937; }
+  .flow-text span { font-size: 12.5px; color: #6b7280; }
+  .toc { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; margin: 24px 0; }
+  .toc h2 { border: none; padding: 0; margin: 0 0 16px; font-size: 16px; color: #1f2937; }
+  .toc ol { counter-reset: section; }
+  .toc ol li { list-style: none; counter-increment: section; margin-bottom: 8px; }
+  .toc ol li::before { content: counter(section) ". "; font-weight: 700; color: #1d4ed8; }
+  .toc a { color: #1d4ed8; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .file-tree { background: #0f172a; color: #94a3b8; border-radius: 10px; padding: 20px; font-family: monospace; font-size: 12.5px; line-height: 1.8; margin: 16px 0; }
+  .file-tree .dir { color: #60a5fa; font-weight: 700; }
+  .file-tree .file { color: #e2e8f0; }
+  .file-tree .comment { color: #64748b; }
+  .arch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+  .arch-card { background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 10px; padding: 16px; }
+  .arch-card h3 { margin-top: 0; color: #1d4ed8; font-size: 15px; }
+  .arch-card ul { padding-left: 16px; }
+  .arch-card li { font-size: 13px; }
+  @media print {
+    .cover { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    h1, h2, h3 { page-break-after: avoid; }
+    pre, table, .flow-box { page-break-inside: avoid; }
+    .arch-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @page { margin: 20mm 15mm; }
+</style>
+</head>
+<body>
+
+<!-- COVER PAGE -->
+<div class="cover">
+  <h1>📱 Sales Capture App</h1>
+  <div class="subtitle">Full Technical Documentation — Frontend & Backend</div>
+  <div class="meta">
+    <div class="meta-item"><div class="label">Author</div><div class="value">Sandeep Shah</div></div>
+    <div class="meta-item"><div class="label">Version</div><div class="value">1.0.0</div></div>
+    <div class="meta-item"><div class="label">Platform</div><div class="value">iOS (iPhone)</div></div>
+    <div class="meta-item"><div class="label">Date</div><div class="value">May 2026</div></div>
+    <div class="meta-item"><div class="label">Stack</div><div class="value">React Native + Node.js</div></div>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="content">
+
+  <!-- TABLE OF CONTENTS -->
+  <div class="toc">
+    <h2>📋 Table of Contents</h2>
+    <ol>
+      <li><a href="#overview">App Overview</a></li>
+      <li><a href="#techstack">Technology Stack</a></li>
+      <li><a href="#architecture">System Architecture</a></li>
+      <li><a href="#frontend">Frontend — React Native App</a></li>
+      <li><a href="#backend">Backend — Node.js Server</a></li>
+      <li><a href="#dataflow">Complete Data Flow</a></li>
+      <li><a href="#screens">Screen-by-Screen Guide</a></li>
+      <li><a href="#services">Services & APIs Used</a></li>
+      <li><a href="#storage">Data Storage</a></li>
+      <li><a href="#email">Email System</a></li>
+      <li><a href="#deployment">Deployment & Hosting</a></li>
+      <li><a href="#envvars">Environment Variables</a></li>
+    </ol>
+  </div>
+
+  <!-- 1. OVERVIEW -->
+  <h1 id="overview">1. App Overview</h1>
+  <p>
+    <strong>Sales Capture</strong> is a mobile iOS app that lets a business owner photograph a physical Z-report or
+    sales receipt, automatically extract the cash and card payment totals using AI (Claude Vision), and instantly
+    email a professional summary to a configured recipient.
+  </p>
+
+  <h3>Core Features</h3>
+  <ul>
+    <li>📷 <strong>Camera Capture</strong> — take a photo of a Z-report or receipt directly in the app</li>
+    <li>🖼️ <strong>Gallery Import</strong> — pick an existing photo from your iPhone's photo library</li>
+    <li>🤖 <strong>AI OCR Extraction</strong> — Claude Vision reads the document and extracts cash &amp; card totals</li>
+    <li>📧 <strong>Email Summary</strong> — sends a professional HTML email via Resend API</li>
+    <li>⚡ <strong>Auto-send</strong> — optional setting to send email automatically after every capture</li>
+    <li>📋 <strong>History</strong> — view, review, and delete all past captured records</li>
+    <li>🗑️ <strong>Delete Records</strong> — long-press or tap trash icon to delete any record</li>
+    <li>💾 <strong>Persistent Storage</strong> — all data and receipt images saved on-device</li>
+  </ul>
+
+  <!-- 2. TECH STACK -->
+  <h1 id="techstack">2. Technology Stack</h1>
+
+  <h2>Frontend (Mobile App)</h2>
+  <table>
+    <tr><th>Technology</th><th>Version</th><th>Purpose</th></tr>
+    <tr><td>React Native</td><td>0.76.x</td><td>Cross-platform mobile framework</td></tr>
+    <tr><td>Expo SDK</td><td>52</td><td>Mobile tooling, camera, filesystem access</td></tr>
+    <tr><td>TypeScript</td><td>5.x</td><td>Type-safe JavaScript</td></tr>
+    <tr><td>React Navigation</td><td>6.x</td><td>Screen navigation (Stack + Bottom Tabs)</td></tr>
+    <tr><td>expo-camera</td><td>16.x</td><td>Live camera view and photo capture</td></tr>
+    <tr><td>expo-image-picker</td><td>16.x</td><td>Access iPhone photo gallery</td></tr>
+    <tr><td>expo-image-manipulator</td><td>13.x</td><td>Resize and compress images before upload</td></tr>
+    <tr><td>expo-file-system</td><td>18.x</td><td>Permanent storage of receipt images on device</td></tr>
+    <tr><td>AsyncStorage</td><td>2.x</td><td>Persistent key-value storage for sales records</td></tr>
+    <tr><td>react-native-safe-area-context</td><td>4.x</td><td>Handle iPhone notch and safe areas</td></tr>
+    <tr><td>react-native-screens</td><td>4.x</td><td>Native screen components (performance)</td></tr>
+  </table>
+
+  <h2>Backend (Server)</h2>
+  <table>
+    <tr><th>Technology</th><th>Version</th><th>Purpose</th></tr>
+    <tr><td>Node.js</td><td>18+</td><td>Server runtime</td></tr>
+    <tr><td>Express.js</td><td>4.x</td><td>HTTP API framework</td></tr>
+    <tr><td>TypeScript</td><td>5.x</td><td>Type-safe server code</td></tr>
+    <tr><td>Anthropic SDK</td><td>0.39+</td><td>Claude Vision API for OCR</td></tr>
+    <tr><td>Resend</td><td>HTTP API</td><td>Professional email sending service</td></tr>
+    <tr><td>ts-node</td><td>10.x</td><td>Run TypeScript directly in Node</td></tr>
+    <tr><td>nodemon</td><td>3.x</td><td>Auto-restart server on file changes (dev)</td></tr>
+  </table>
+
+  <h2>External Services</h2>
+  <table>
+    <tr><th>Service</th><th>Used For</th><th>Cost</th></tr>
+    <tr><td>Anthropic Claude API</td><td>AI Vision OCR — reads receipt images</td><td>Pay per token (~$0.003/image)</td></tr>
+    <tr><td>Resend API</td><td>Sending HTML summary emails</td><td>Free up to 3,000/month</td></tr>
+    <tr><td>Render.com</td><td>Hosting the Node.js backend server</td><td>Free tier available</td></tr>
+    <tr><td>GitHub</td><td>Source code repository &amp; auto-deploy</td><td>Free</td></tr>
+  </table>
+
+  <!-- 3. ARCHITECTURE -->
+  <h1 id="architecture">3. System Architecture</h1>
+
+  <div class="flow-box">
+    <strong style="display:block; margin-bottom:16px; color:#1d4ed8;">High-Level System Diagram</strong>
+    <pre style="background:none; color:#1f2937; padding:0; font-size:13px;">
+  iPhone (React Native App)
+  ┌─────────────────────────────────────────┐
+  │  Camera / Gallery → Image               │
+  │  ↓                                      │
+  │  Compress + Encode to Base64            │
+  │  ↓                                      │
+  │  POST /api/extract  ──────────────────► Render Server (Node.js)
+  │                                         │
+  │  ◄──────────────── SalesData JSON       │  ↓
+  │                                         │  Anthropic Claude Vision API
+  │  Save to AsyncStorage + FileSystem      │  (AI reads the receipt image)
+  │  ↓                                      │  ↓
+  │  Show ReviewScreen                      │  Returns structured JSON
+  │  ↓                                      │
+  │  POST /api/email  ────────────────────► Render Server
+  │                                         │  ↓
+  │                                         │  Resend API
+  │                                         │  (sends HTML email)
+  └─────────────────────────────────────────┘
+    </pre>
+  </div>
+
+  <div class="arch-grid">
+    <div class="arch-card">
+      <h3>📱 Frontend Responsibilities</h3>
+      <ul>
+        <li>Show camera &amp; gallery UI</li>
+        <li>Compress image to Base64</li>
+        <li>Call backend API for OCR</li>
+        <li>Display extracted data</li>
+        <li>Call backend API for email</li>
+        <li>Store all data on device</li>
+        <li>Manage app settings</li>
+        <li>History with thumbnails</li>
+      </ul>
+    </div>
+    <div class="arch-card">
+      <h3>🖥️ Backend Responsibilities</h3>
+      <ul>
+        <li>Receive image from app</li>
+        <li>Call Claude Vision API</li>
+        <li>Parse AI response to JSON</li>
+        <li>Return structured SalesData</li>
+        <li>Compose HTML email template</li>
+        <li>Send email via Resend API</li>
+        <li>Health check endpoint</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- 4. FRONTEND -->
+  <h1 id="frontend">4. Frontend — React Native App</h1>
+
+  <h2>Project Structure</h2>
+  <div class="file-tree">
+    <span class="dir">app/</span><br/>
+    <span>├── </span><span class="file">index.js</span><span class="comment">          ← Entry point (registerRootComponent)</span><br/>
+    <span>├── </span><span class="file">App.tsx</span><span class="comment">           ← Root component (SafeAreaProvider + AppNavigator)</span><br/>
+    <span>├── </span><span class="file">app.json</span><span class="comment">          ← Expo config (permissions, plugins, icon)</span><br/>
+    <span>├── </span><span class="file">package.json</span><span class="comment">      ← Dependencies</span><br/>
+    <span>├── </span><span class="file">tsconfig.json</span><span class="comment">     ← TypeScript config</span><br/>
+    <span>├── </span><span class="dir">assets/</span><span class="comment">           ← App icon, splash screen images</span><br/>
+    <span>├── </span><span class="dir">ios/</span><span class="comment">              ← Generated Xcode project (expo prebuild)</span><br/>
+    <span>└── </span><span class="dir">src/</span><br/>
+    <span>    ├── </span><span class="dir">navigation/</span><br/>
+    <span>    │   └── </span><span class="file">AppNavigator.tsx</span><span class="comment">  ← Stack + Bottom Tab setup</span><br/>
+    <span>    ├── </span><span class="dir">screens/</span><br/>
+    <span>    │   ├── </span><span class="file">HomeScreen.tsx</span><span class="comment">    ← Today's summary + recent history</span><br/>
+    <span>    │   ├── </span><span class="file">CameraScreen.tsx</span><span class="comment">  ← Camera + gallery capture</span><br/>
+    <span>    │   ├── </span><span class="file">ReviewScreen.tsx</span><span class="comment">  ← Show OCR results + send email</span><br/>
+    <span>    │   ├── </span><span class="file">HistoryScreen.tsx</span><span class="comment"> ← All past records grouped by date</span><br/>
+    <span>    │   └── </span><span class="file">SettingsScreen.tsx</span><span class="comment">← Email, server URL, auto-send toggle</span><br/>
+    <span>    ├── </span><span class="dir">components/</span><br/>
+    <span>    │   ├── </span><span class="file">CameraGuide.tsx</span><span class="comment">   ← Overlay frame guide in camera</span><br/>
+    <span>    │   ├── </span><span class="file">LoadingOverlay.tsx</span><span class="comment">← Full-screen spinner modal</span><br/>
+    <span>    │   ├── </span><span class="file">PaymentRow.tsx</span><span class="comment">    ← Single payment line item</span><br/>
+    <span>    │   └── </span><span class="file">SalesSummaryCard.tsx</span><span class="comment">← Today's totals card</span><br/>
+    <span>    ├── </span><span class="dir">services/</span><br/>
+    <span>    │   ├── </span><span class="file">ocrService.ts</span><span class="comment">     ← Calls backend /api/extract</span><br/>
+    <span>    │   ├── </span><span class="file">emailService.ts</span><span class="comment">   ← Calls backend /api/email</span><br/>
+    <span>    │   └── </span><span class="file">storageService.ts</span><span class="comment"> ← AsyncStorage CRUD + file cleanup</span><br/>
+    <span>    ├── </span><span class="dir">types/</span><br/>
+    <span>    │   └── </span><span class="file">index.ts</span><span class="comment">          ← SalesData, AppSettings, navigation types</span><br/>
+    <span>    └── </span><span class="dir">utils/</span><br/>
+    <span>        ├── </span><span class="file">dateUtils.ts</span><span class="comment">      ← Today's date, "Yesterday", relative labels</span><br/>
+    <span>        └── </span><span class="file">dataAggregation.ts</span><span class="comment">← Group records by date, compute totals</span><br/>
+  </div>
+
+  <h2>Navigation Setup — AppNavigator.tsx</h2>
+  <p>The app uses two navigators stacked together:</p>
+  <ul>
+    <li><strong>NativeStack Navigator</strong> — wraps everything; handles the Review screen (slides in on top)</li>
+    <li><strong>Bottom Tab Navigator</strong> — the main 4 tabs: Home, Capture, History, Settings</li>
+  </ul>
+  <pre><code>NativeStack (root)
+  └── "Main" → Bottom Tab Navigator
+        ├── Tab: "Home"     → HomeScreen
+        ├── Tab: "Camera"   → CameraScreen
+        ├── Tab: "History"  → HistoryScreen
+        └── Tab: "Settings" → SettingsScreen
+  └── "Review" → ReviewScreen  (slides over tabs)</code></pre>
+
+  <h2>TypeScript Data Types — types/index.ts</h2>
+  <pre><code>// One payment line item (e.g. "Visa" → $500.00)
+interface PaymentEntry {
+  description: string;  // payment method or label
+  amount: number;       // dollar amount
+}
+
+// A complete captured sales record
+interface SalesData {
+  id: string;              // "sale_1716123456789" (timestamp-based)
+  date: string;            // "2026-05-23" (YYYY-MM-DD)
+  imageUri: string;        // local file path to receipt image
+  cashPayments: PaymentEntry[];
+  cardPayments: PaymentEntry[];
+  cashTotal: number;
+  cardTotal: number;
+  confidence: 'high' | 'medium' | 'low';  // AI confidence score
+  notes?: string;          // any notes from AI extraction
+  emailSent: boolean;      // has email been sent for this record?
+}
+
+// App configuration stored in AsyncStorage
+interface AppSettings {
+  recipientEmail: string;  // where to send summaries
+  senderName: string;      // "My Business" — appears in email from line
+  autoSendEmail: boolean;  // auto-send after every capture?
+  serverUrl: string;       // backend URL (Render or localhost)
+}</code></pre>
+
+  <h2>Key Screens Explained</h2>
+
+  <h3>HomeScreen.tsx</h3>
+  <p>The dashboard. Shows today's combined totals (cash + card + record count) in a summary card at the top. Below that, recent activity grouped by day. Tapping any record navigates to ReviewScreen.</p>
+
+  <h3>CameraScreen.tsx</h3>
+  <p>Live camera view using <code>expo-camera</code>. Has three modes:</p>
+  <ul>
+    <li><strong>Camera mode</strong> — live preview with flash toggle, flip camera, and gallery button</li>
+    <li><strong>Preview mode</strong> — shows the captured photo with "Retake" and "Use Photo" buttons</li>
+    <li><strong>Processing</strong> — shows a loading spinner while OCR runs on the backend</li>
+  </ul>
+  <p>Gallery import uses <code>expo-image-picker</code> to open the iPhone photo library.</p>
+  <p>After OCR succeeds, navigates to <code>Review</code> with <code>autoSend: true</code> flag.</p>
+
+  <h3>ReviewScreen.tsx</h3>
+  <p>Shows the full extracted data: receipt thumbnail, confidence badge, cash payments list, card payments list, grand total. Has "Send Email Summary" button and "Retake Photo" button.</p>
+  <p><strong>Auto-send logic:</strong> On mount, if the navigation param <code>autoSend === true</code> and the <code>autoSendEmail</code> setting is enabled, it automatically calls <code>doSendEmail()</code> without the user needing to tap anything.</p>
+
+  <h3>HistoryScreen.tsx</h3>
+  <p>All records grouped by date (Today, Yesterday, then actual dates). Each record shows a receipt thumbnail, time, confidence dot, cash/card breakdown, and total. Tap the 🗑️ button to delete. Long-press also triggers delete confirmation.</p>
+
+  <h3>SettingsScreen.tsx</h3>
+  <p>Four configurable fields:</p>
+  <ul>
+    <li><strong>Recipient Email</strong> — where summaries are sent</li>
+    <li><strong>Sender Name</strong> — shown in the email "From" field</li>
+    <li><strong>Auto-send Email</strong> — toggle: automatically email after each capture</li>
+    <li><strong>Server URL</strong> — URL of the backend (Render URL or local IP for testing)</li>
+  </ul>
+
+  <!-- 5. BACKEND -->
+  <h1 id="backend">5. Backend — Node.js Server</h1>
+
+  <h2>Project Structure</h2>
+  <div class="file-tree">
+    <span class="dir">server/</span><br/>
+    <span>├── </span><span class="file">package.json</span><span class="comment">         ← Dependencies (express, anthropic, etc.)</span><br/>
+    <span>├── </span><span class="file">tsconfig.json</span><span class="comment">        ← TypeScript config</span><br/>
+    <span>├── </span><span class="file">.env</span><span class="comment">                 ← Secret keys (NOT committed to GitHub)</span><br/>
+    <span>├── </span><span class="file">render.yaml</span><span class="comment">          ← Render.com deployment config</span><br/>
+    <span>└── </span><span class="dir">src/</span><br/>
+    <span>    ├── </span><span class="file">server.ts</span><span class="comment">            ← Express app + routes + health check</span><br/>
+    <span>    └── </span><span class="dir">services/</span><br/>
+    <span>        ├── </span><span class="file">claudeVision.ts</span><span class="comment">  ← Calls Anthropic API, parses response</span><br/>
+    <span>        └── </span><span class="file">emailSender.ts</span><span class="comment">   ← Builds HTML email, calls Resend API</span><br/>
+  </div>
+
+  <h2>API Endpoints — server.ts</h2>
+  <table>
+    <tr><th>Method</th><th>Path</th><th>Description</th></tr>
+    <tr><td><span class="badge badge-green">GET</span></td><td><code>/health</code></td><td>Health check — returns server status and API key presence</td></tr>
+    <tr><td><span class="badge badge-blue">POST</span></td><td><code>/api/extract</code></td><td>Receives Base64 image, runs Claude Vision OCR, returns SalesData JSON</td></tr>
+    <tr><td><span class="badge badge-blue">POST</span></td><td><code>/api/email</code></td><td>Receives SalesData + recipient info, sends HTML email via Resend</td></tr>
+  </table>
+
+  <h3>POST /api/extract — Request &amp; Response</h3>
+  <pre><code>// Request body (sent by app)
+{
+  "imageBase64": "...",     // Base64-encoded JPEG
+  "mimeType": "image/jpeg"
+}
+
+// Response body (returned to app)
+{
+  "id": "sale_1716123456789",
+  "date": "2026-05-23",
+  "imageUri": "",
+  "cashPayments": [
+    { "description": "Cash", "amount": 1200.00 }
+  ],
+  "cardPayments": [
+    { "description": "Visa", "amount": 2444.99 },
+    { "description": "Mastercard", "amount": 500.00 }
+  ],
+  "cashTotal": 1200.00,
+  "cardTotal": 2944.99,
+  "confidence": "high",
+  "notes": "",
+  "emailSent": false
+}</code></pre>
+
+  <h3>POST /api/email — Request Body</h3>
+  <pre><code>{
+  "salesData": { ...SalesData object... },
+  "recipientEmail": "manager@business.com",
+  "senderName": "My Business"
+}</code></pre>
+
+  <h2>Claude Vision Service — claudeVision.ts</h2>
+  <p>This is the core AI service. It sends the Base64 image to Anthropic's Claude model with a carefully crafted prompt:</p>
+  <pre><code>// The prompt instructs Claude to:
+// 1. Find all CASH payments and their amounts
+// 2. Find all CARD/CREDIT payments and their amounts
+// 3. Return ONLY a JSON object — no explanations
+// 4. IMPORTANT: Do NOT count Credit Card Breakdown sub-sections
+//    (those are already included in the card total above — counting
+//    them would cause double-counting)
+// 5. Mark confidence as high/medium/low based on readability</code></pre>
+
+  <p>Claude returns a JSON string which the service parses and validates before returning to the app.</p>
+
+  <div class="info-box">
+    <div class="icon">💡</div>
+    <strong>Why this matters:</strong> Z-reports often have a "Credit Card Breakdown" section that lists each card type separately. Without the special instruction, Claude would add those amounts again on top of the already-counted card total, causing double the card total to appear.
+  </div>
+
+  <h2>Email Service — emailSender.ts</h2>
+  <p>Builds a professional HTML email and sends it via the Resend HTTP API. The email includes:</p>
+  <ul>
+    <li>Dark blue header with business name and date</li>
+    <li>KPI cards: Cash Total, Card Total, Grand Total, Record Count</li>
+    <li>Detailed table of cash payment items</li>
+    <li>Detailed table of card payment items</li>
+    <li>Grand total banner at the bottom</li>
+    <li>AI confidence indicator</li>
+    <li>Footer with "Sent via Sales Capture App"</li>
+  </ul>
+  <pre><code>// Resend API call
+fetch('https://api.resend.com/emails', {
+  method: 'POST',
+  headers: {
+    'Authorization': `Bearer ${RESEND_API_KEY}`,
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    from: 'Sales Capture &lt;onboarding@resend.dev&gt;',
+    to: recipientEmail,
+    subject: `Sales Summary — ${date}`,
+    html: htmlTemplate
+  })
+})</code></pre>
+
+  <div class="warning-box">
+    <strong>⚠️ Why Resend instead of Gmail/SMTP?</strong><br/>
+    Render.com's free tier blocks outbound SMTP ports (25, 465, 587). Resend uses HTTPS (port 443) which is always open, so emails send reliably from the server.
+  </div>
+
+  <!-- 6. DATA FLOW -->
+  <h1 id="dataflow">6. Complete Data Flow</h1>
+
+  <h2>Capture &amp; OCR Flow</h2>
+  <div class="flow-box">
+    <div class="flow-step">
+      <div class="flow-num">1</div>
+      <div class="flow-text">
+        <strong>User takes photo or picks from gallery</strong>
+        <span>CameraScreen.tsx — uses expo-camera or expo-image-picker</span>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">2</div>
+      <div class="flow-text">
+        <strong>Image is compressed and resized</strong>
+        <span>expo-image-manipulator resizes to max 1600px wide, 80% quality JPEG</span>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">3</div>
+      <div class="flow-text">
+        <strong>Image encoded to Base64</strong>
+        <span>expo-file-system reads the compressed file as a Base64 string</span>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">4</div>
+      <div class="flow-text">
+        <strong>POST /api/extract sent to backend</strong>
+        <span>ocrService.ts sends {imageBase64, mimeType} to the Render server</span>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">5</div>
+      <div class="flow-text">
+        <strong>Server calls Claude Vision API</strong>
+        <span>claudeVision.ts uses Anthropic SDK to send image + prompt to claude-3-5-sonnet</span>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">6</div>
+      <div class="flow-text">
+        <strong>Claude reads the receipt and returns JSON</strong>
+        <span>AI extracts cash payments, card payments, totals, and confidence level</span>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">7</div>
+      <div class="flow-text">
+        <strong>SalesData returned to app</strong>
+        <span>Server parses Claude's response and sends structured JSON back to the app</span>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">8</div>
+      <div class="flow-text">
+        <strong>Image saved permanently on device</strong>
+        <span>ocrService.ts copies the photo to documentDirectory/receipts/ folder</span>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">9</div>
+      <div class="flow-text">
+        <strong>Record saved to AsyncStorage</strong>
+        <span>storageService.ts saves the full SalesData object to device storage</span>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">10</div>
+      <div class="flow-text">
+        <strong>Navigate to ReviewScreen</strong>
+        <span>App shows extracted data; if auto-send is on, email fires automatically</span>
+      </div>
+    </div>
+  </div>
+
+  <h2>Email Send Flow</h2>
+  <div class="flow-box">
+    <div class="flow-step">
+      <div class="flow-num">1</div>
+      <div class="flow-text">
+        <strong>User taps "Send Email Summary" (or auto-send triggers)</strong>
+        <span>ReviewScreen calls emailService.sendSalesSummaryEmail(salesData)</span>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">2</div>
+      <div class="flow-text">
+        <strong>App reads settings from AsyncStorage</strong>
+        <span>Gets recipientEmail and senderName from stored AppSettings</span>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">3</div>
+      <div class="flow-text">
+        <strong>POST /api/email sent to backend</strong>
+        <span>Sends {salesData, recipientEmail, senderName} to the Render server</span>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">4</div>
+      <div class="flow-text">
+        <strong>Server builds HTML email template</strong>
+        <span>emailSender.ts creates professional HTML with all payment details</span>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">5</div>
+      <div class="flow-text">
+        <strong>Email sent via Resend API</strong>
+        <span>Resend delivers the email to the recipient's inbox</span>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-num">6</div>
+      <div class="flow-text">
+        <strong>Record updated: emailSent = true</strong>
+        <span>storageService.updateSalesData marks the record as sent in AsyncStorage</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. SCREENS -->
+  <h1 id="screens">7. Screen-by-Screen Guide</h1>
+
+  <h2>Home Tab</h2>
+  <table>
+    <tr><th>Element</th><th>What it shows</th><th>Source</th></tr>
+    <tr><td>Summary Card</td><td>Today's cash total, card total, record count</td><td>Computed from AsyncStorage records filtered by today's date</td></tr>
+    <tr><td>Recent Activity</td><td>Last 7 days of records grouped by day</td><td>AsyncStorage, sorted and grouped by date</td></tr>
+    <tr><td>✉ Sent badge</td><td>Green badge on records where email was sent</td><td>emailSent field in SalesData</td></tr>
+  </table>
+
+  <h2>Capture Tab</h2>
+  <table>
+    <tr><th>Button</th><th>Action</th></tr>
+    <tr><td>⚡ Flash button</td><td>Toggles camera flash on/off</td></tr>
+    <tr><td>🔄 Flip button</td><td>Switches front/rear camera</td></tr>
+    <tr><td>🖼️ Gallery button</td><td>Opens iPhone photo library (expo-image-picker)</td></tr>
+    <tr><td>Large white circle</td><td>Takes a photo (expo-camera takePictureAsync)</td></tr>
+    <tr><td>Retake (after capture)</td><td>Discards photo, returns to camera</td></tr>
+    <tr><td>Use Photo (after capture)</td><td>Compresses, uploads, runs OCR</td></tr>
+  </table>
+
+  <h2>Review Screen (appears after capture)</h2>
+  <table>
+    <tr><th>Element</th><th>Description</th></tr>
+    <tr><td>Receipt thumbnail</td><td>The photo you captured, shown at top</td></tr>
+    <tr><td>⚠️ Warning banner</td><td>Only shown when AI confidence is "low"</td></tr>
+    <tr><td>Confidence badge</td><td>Green = High, Yellow = Medium, Red = Low</td></tr>
+    <tr><td>Cash Payments section</td><td>List of cash payment items with subtotal</td></tr>
+    <tr><td>Card Payments section</td><td>List of card payment items with subtotal</td></tr>
+    <tr><td>Grand Total</td><td>Cash + Card combined, shown in blue banner</td></tr>
+    <tr><td>Send Email Summary</td><td>Sends email via backend to configured address</td></tr>
+    <tr><td>Retake Photo</td><td>Goes back to camera screen</td></tr>
+  </table>
+
+  <h2>History Tab</h2>
+  <table>
+    <tr><th>Feature</th><th>How it works</th></tr>
+    <tr><td>Date groups</td><td>Records grouped by date, most recent first</td></tr>
+    <tr><td>Date group header</td><td>Shows relative label (Today/Yesterday/date) + day totals</td></tr>
+    <tr><td>Receipt thumbnail</td><td>Small 52x52 photo from saved file path</td></tr>
+    <tr><td>Confidence dot</td><td>Green/Yellow/Red dot indicating AI confidence</td></tr>
+    <tr><td>✉ Sent badge</td><td>Shown if email was sent for that record</td></tr>
+    <tr><td>🗑️ Delete button</td><td>Tap to delete with confirmation dialog</td></tr>
+    <tr><td>Long press</td><td>Also triggers delete confirmation</td></tr>
+    <tr><td>Tap record</td><td>Opens ReviewScreen to see full details</td></tr>
+    <tr><td>Pull to refresh</td><td>Reloads all records from storage</td></tr>
+  </table>
+
+  <h2>Settings Tab</h2>
+  <table>
+    <tr><th>Setting</th><th>What it does</th></tr>
+    <tr><td>Recipient Email</td><td>Email address that receives all sales summaries</td></tr>
+    <tr><td>Sender Name</td><td>Business name shown in the email's From field</td></tr>
+    <tr><td>Auto-send Email (toggle)</td><td>When ON: email is sent automatically right after every capture</td></tr>
+    <tr><td>Server URL</td><td>Backend address — use Render URL for production</td></tr>
+    <tr><td>Save Settings</td><td>Saves all fields to AsyncStorage</td></tr>
+    <tr><td>Send Test Email</td><td>Sends a test email to verify everything is configured correctly</td></tr>
+  </table>
+
+  <!-- 8. SERVICES -->
+  <h1 id="services">8. Services &amp; APIs</h1>
+
+  <h2>ocrService.ts — Frontend OCR Service</h2>
+  <pre><code>// What it does:
+// 1. Generates a unique ID for the record
+// 2. Copies the receipt image to a permanent location on device
+// 3. Sends the Base64 image to the backend
+// 4. Returns SalesData with permanent imageUri set
+
+export async function extractSalesData(
+  base64: string,
+  originalUri: string,
+  mimeType: string
+): Promise&lt;SalesData&gt;</code></pre>
+
+  <h2>emailService.ts — Frontend Email Service</h2>
+  <pre><code>// Reads settings, then calls backend
+export async function sendSalesSummaryEmail(salesData: SalesData): Promise&lt;void&gt;
+export async function sendTestEmail(email: string, name: string): Promise&lt;void&gt;</code></pre>
+
+  <h2>storageService.ts — Device Storage</h2>
+  <pre><code>// Sales data CRUD
+getAllSalesData()         → SalesData[]     // sorted newest first
+saveSalesData(data)      → void            // prepends to list
+updateSalesData(id, updates) → SalesData   // partial update by id
+deleteSalesData(id)      → void            // removes + deletes image file
+clearAllSalesData()      → void            // wipes everything
+
+// Settings CRUD
+getSettings()            → AppSettings     // merged with defaults
+saveSettings(partial)    → AppSettings     // merged save
+resetSettings()          → AppSettings     // reset to defaults</code></pre>
+
+  <!-- 9. STORAGE -->
+  <h1 id="storage">9. Data Storage</h1>
+
+  <h2>AsyncStorage Keys</h2>
+  <table>
+    <tr><th>Key</th><th>What's stored</th><th>Format</th></tr>
+    <tr><td><code>@sales_capture:sales_data</code></td><td>All sales records</td><td>JSON array of SalesData[]</td></tr>
+    <tr><td><code>@sales_capture:settings</code></td><td>App configuration</td><td>JSON object of AppSettings</td></tr>
+  </table>
+
+  <h2>Receipt Image Storage</h2>
+  <p>When a receipt is captured, the photo is permanently stored at:</p>
+  <pre><code>{FileSystem.documentDirectory}/receipts/{recordId}.jpg</code></pre>
+  <p>This is inside the app's private documents folder on the iPhone. The image persists even if the app restarts. When a record is deleted, the image file is also deleted automatically.</p>
+
+  <div class="info-box">
+    <div class="icon">💡</div>
+    <strong>Why permanent storage?</strong> Temporary camera URIs get deleted when the camera session ends. Without copying to a permanent path, receipt thumbnails in History would show as broken images.
+  </div>
+
+  <!-- 10. EMAIL -->
+  <h1 id="email">10. Email System</h1>
+
+  <h2>Email Provider: Resend</h2>
+  <p>The app uses <strong>Resend</strong> (resend.com) instead of traditional SMTP because Render.com's free server tier blocks SMTP ports. Resend uses HTTPS, which always works.</p>
+
+  <h2>Email Template Structure</h2>
+  <ul>
+    <li><strong>Header</strong> — dark blue background, business name, date</li>
+    <li><strong>KPI Cards</strong> — Cash Total | Card Total | Grand Total | Records</li>
+    <li><strong>Cash Payments Table</strong> — description + amount for each cash item</li>
+    <li><strong>Card Payments Table</strong> — description + amount for each card item</li>
+    <li><strong>Grand Total Banner</strong> — large total in blue background</li>
+    <li><strong>Footer</strong> — "Sent via Sales Capture App"</li>
+  </ul>
+
+  <h2>Resend Configuration</h2>
+  <table>
+    <tr><th>Field</th><th>Value</th></tr>
+    <tr><td>From address</td><td><code>onboarding@resend.dev</code> (Resend's default sender)</td></tr>
+    <tr><td>API Key location</td><td>Server <code>.env</code> file: <code>RESEND_API_KEY=re_xxx...</code></td></tr>
+    <tr><td>API endpoint</td><td><code>https://api.resend.com/emails</code></td></tr>
+    <tr><td>Free tier limit</td><td>3,000 emails/month, 100/day</td></tr>
+  </table>
+
+  <!-- 11. DEPLOYMENT -->
+  <h1 id="deployment">11. Deployment &amp; Hosting</h1>
+
+  <h2>Backend — Render.com</h2>
+  <table>
+    <tr><th>Setting</th><th>Value</th></tr>
+    <tr><td>Service type</td><td>Web Service</td></tr>
+    <tr><td>Repository</td><td>GitHub (auto-deploy on push to main)</td></tr>
+    <tr><td>Build command</td><td><code>cd server &amp;&amp; npm install &amp;&amp; npm run build</code></td></tr>
+    <tr><td>Start command</td><td><code>cd server &amp;&amp; npm start</code></td></tr>
+    <tr><td>Public URL</td><td><code>https://sales-capture-server.onrender.com</code></td></tr>
+    <tr><td>Free tier limitation</td><td>Server sleeps after 15 minutes of inactivity (use UptimeRobot to keep awake)</td></tr>
+  </table>
+
+  <h2>Frontend — iPhone via Xcode</h2>
+  <table>
+    <tr><th>Step</th><th>Command / Action</th></tr>
+    <tr><td>Generate iOS project</td><td><code>npx expo prebuild --platform ios --clean</code></td></tr>
+    <tr><td>Install iOS dependencies</td><td><code>cd ios &amp;&amp; pod install</code></td></tr>
+    <tr><td>Open in Xcode</td><td>Open <code>ios/SalesCapture.xcworkspace</code></td></tr>
+    <tr><td>Sign the app</td><td>Signing &amp; Capabilities → Team: Personal Team (Apple ID)</td></tr>
+    <tr><td>Build mode</td><td>Product → Scheme → Edit Scheme → Run → Release</td></tr>
+    <tr><td>Build &amp; install</td><td>Press ▶ with iPhone connected</td></tr>
+  </table>
+
+  <div class="info-box">
+    <div class="icon">📱</div>
+    <strong>Release vs Debug mode:</strong> Debug mode requires Metro bundler (terminal) to be running. Release mode embeds the JavaScript bundle into the app, so it works standalone without any terminal or Mac running.
+  </div>
+
+  <!-- 12. ENV VARS -->
+  <h1 id="envvars">12. Environment Variables</h1>
+
+  <h2>Server — /server/.env</h2>
+  <pre><code># Anthropic Claude API key (for OCR)
+ANTHROPIC_API_KEY=sk-ant-...
+
+# Resend API key (for sending emails)
+RESEND_API_KEY=re_...
+
+# Server port (Render sets this automatically)
+PORT=3001</code></pre>
+
+  <div class="warning-box">
+    <strong>⚠️ Security:</strong> The <code>.env</code> file must NEVER be committed to GitHub. It is listed in <code>.gitignore</code>. Set these values in the Render dashboard under "Environment Variables".
+  </div>
+
+  <h2>App — Configured in Settings Screen</h2>
+  <table>
+    <tr><th>Setting</th><th>Where stored</th><th>Example</th></tr>
+    <tr><td>Recipient Email</td><td>AsyncStorage on device</td><td>manager@mybusiness.com</td></tr>
+    <tr><td>Sender Name</td><td>AsyncStorage on device</td><td>My Business</td></tr>
+    <tr><td>Server URL</td><td>AsyncStorage on device</td><td>https://sales-capture-server.onrender.com</td></tr>
+    <tr><td>Auto-send Email</td><td>AsyncStorage on device</td><td>true / false</td></tr>
+  </table>
+
+  <br/><br/>
+  <div style="text-align:center; padding: 30px; background: #f8fafc; border-radius: 12px; margin-top: 40px;">
+    <p style="font-size:16px; font-weight:700; color:#1d4ed8;">Sales Capture App</p>
+    <p style="color:#6b7280; font-size:13px;">Built by Sandeep Shah · Powered by Claude AI + Resend + Render · May 2026</p>
+  </div>
+
+</div>
+</body>
+</html>

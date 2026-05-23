@@ -101,7 +101,7 @@ export default function CameraScreen() {
 
       // Navigate to review screen
       setCapturedUri(null);
-      navigation.navigate('Review', { salesData });
+      navigation.navigate('Review', { salesData, autoSend: true });
     } catch (err) {
       const error = err as Error;
       Alert.alert(
